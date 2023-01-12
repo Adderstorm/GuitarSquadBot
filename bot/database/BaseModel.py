@@ -1,38 +1,48 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, text, INT
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy import create_engine
+import os
+import typing
+from contextlib import contextmanager
 
-engine = create_engine('sqlite:///database.db', echo=True)
+from sqlalchemy import MetaData, create_engine
+from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.orm import sessionmaker, scoped_session, Query, Mapper
 
-Base = declarative_base()
 
-class blacklist(Base):
-    __tablename__ = 'blacklist'
+def _get_query_cls(mapper, session):
+    if mapper:
+        m = mapper
+        if isinstance(m, tuple):
+            m = mapper[0]
+        if isinstance(m, Mapper):
+            m = m.entity
 
-    id = Column(INT, nullable=False, primary_key=True)
-    user_id = Column(Integer, nullable=False)
-    created_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    blacklist = relationship("blacklist")
+        try:
+            return m.__query_cls__(mapper, session)
+        except AttributeError:
+            pass
 
-class private_category(Base):
-    __tablename__ = 'private_category'
+    return Query(mapper, session)
 
-    id = Column(INT, nullable=False, primary_key=True)
-    server_id = Column(Integer, nullable=False)
-    category_id = Column(Integer, nullable=False)
-    channel_id = Column(Integer, nullable = False)
-    private_category = relationship("private_category")
 
-class warns(Base):
-    __tablename__ = 'warns'
+Session = sessionmaker(query_cls=_get_query_cls)
+engine = create_engine(os.environ["DB_URL"])
+metadata = MetaData(bind=engine)
+current_session = scoped_session(Session)
 
-    id = Column(INT, nullable=False, primary_key=True)
-    user_id = Column(Integer, nullable=False)
-    server_id = Column(Integer, nullable=False)
-    moderator_id = Column(Integer, nullable=False)
-    reason = Column(String(255), nullable=False)
-    created_at = Column(TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    warns = relationship("warns")
 
-#Base.metadata.create_all(engine)
+@as_declarative(metadata=metadata)
+class BaseModel:
+    pass
+
+
+@contextmanager
+def session(**kwargs) -> typing.ContextManager[Session]:
+    """Provide a transactional scope around a series of operations."""
+    new_session = Session(**kwargs)
+    try:
+        yield new_session
+        new_session.commit()
+    except Exception:
+        new_session.rollback()
+        raise
+    finally:
+        new_session.close()

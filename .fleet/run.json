@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Python: текущий файл",
+            "type": "python",
+            "file": "bot/bot.py",
+            "arguments": [],
+        }
+    ]
+}

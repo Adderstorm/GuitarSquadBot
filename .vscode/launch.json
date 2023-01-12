@@ -8,7 +8,7 @@
             "name": "Python: текущий файл",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\bot.py",
+            "program": "${workspaceFolder}\\bot/bot.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }

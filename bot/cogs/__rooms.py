@@ -8,24 +8,14 @@ class Rooms(commands.Cog, name='__rooms'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-        name='rename',
-        description='Rename your own channel name'
-    )
+    @commands.Cog.listener()
     @checks.not_blacklisted()
-    async def rename(self, context: Context, *, message: str):
-        pass
-
-    
-
-
-    @commands.command(
-        name='hide',
-        description='Hide or show your own room'
-    )
-    @checks.not_blacklisted()
-    async def hide(self, context: Context):
-        pass
+    async def on_voice_state_update(context: Context, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+        #entry_room = get__channel(context.guild.id)
+        entry_room = 1058488459146317875
+        print(before, after, member, sep='\n')
+        if(before.channel != entry_room and after.channel == entry_room):
+            pass
 
     @commands.hybrid_group(
         name='voice',
@@ -40,23 +30,19 @@ class Rooms(commands.Cog, name='__rooms'):
                 color=0xE02B2B
             )
             await context.send(embed=embed)
-
+    
     @voice.command(
         base='voice',
         name='_invite',
-        desription=''
+        desription='Create entry point for the private rooms'
     )
     @checks.is_owner()
     @checks.is_private_rooms_created()
-    async def create__channel(self, context: Context):
-        channel_name='[➕] Создать'
-        category_name='Приватные каналы'
+    async def create__channel(self, context: Context, category_name: str = 'Приватные каналы'):
+        channel_name='➕・Создать'
 
-        await context.guild.create_category(name=category_name)
-        category = discord.utils.get(context.guild.categories, name=category_name)
-
-        await context.guild.create_voice_channel(name=channel_name, category=category)
-        channel = discord.utils.get(context.guild.voice_channels, name=channel_name)
+        category = await context.guild.create_category(name=category_name)
+        channel = await context.guild.create_voice_channel(name=channel_name, category=category)
 
         create__category(context.guild.id, category.id, channel.id)
 
@@ -64,13 +50,34 @@ class Rooms(commands.Cog, name='__rooms'):
             title="Voice channel created",
             description="Succesful :)",
             color=0x32CD32
+        ).add_field(
+            name="P.S.",
+            value="You can also rename category or channel"
         )
         await context.send(embed=embed)
+
+    @commands.command(
+        base='voice',
+        name='rename',
+        description='Rename your own channel name'
+    )
+    @checks.not_blacklisted()
+    async def rename(self, context: Context, *, message: str):
+        pass
+
+    @commands.command(
+        base='voice',
+        name='hide',
+        description='Hide or show your own room'
+    )
+    @checks.not_blacklisted()
+    async def hide(self, context: Context):
+        pass
 
     @voice.command(
         base='voice',
         name='kick',
-        description=''
+        description='Kick abussive member'
     )
     @checks.not_blacklisted()
     async def kick(self, context: Context, user: discord.User):
@@ -79,7 +86,7 @@ class Rooms(commands.Cog, name='__rooms'):
     @voice.command(
         base='voice',
         name='limit',
-        desription=''
+        desription='Set the limit for the voice channel'
     )
     @checks.not_blacklisted()
     async def limit(self, context: Context, numb: int):
@@ -88,7 +95,7 @@ class Rooms(commands.Cog, name='__rooms'):
     @voice.command(
         base='voice',
         name='owner',
-        description=''
+        description='Set new channel owner'
     )
     @checks.not_blacklisted()
     async def owner(self, context: Context, newuser: discord.User):

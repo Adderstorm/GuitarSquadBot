@@ -3,10 +3,8 @@ import os
 from dotenv import load_dotenv
 import platform
 import random
-import sqlite3
 
 import discord
-from discord import Interaction
 from discord.ext import commands, tasks
 from discord.ext.commands import Bot, Context
 
@@ -55,10 +53,6 @@ intents = discord.Intents.all()
 bot = Bot(command_prefix=commands.when_mentioned_or(
     PREFIX), intents=intents, help_command=None)
 
-def connect_db():
-    return sqlite3.connect("\\database\database.db")
-
-
 """
 Create a bot variable to access the config file in cogs.
 
@@ -67,7 +61,6 @@ The config is available using the following code:
 - self.bot.config # In cogs
 """
 bot.config = init_conf()
-bot.db = connect_db()
 
 
 @bot.event
@@ -190,7 +183,7 @@ async def load_cogs() -> None:
     """
     The code in this function is executed whenever the bot will start.
     """
-    for file in os.listdir("${workspaceFolder}\\cogs"):
+    for file in os.listdir("./bot/cogs"):
         if file.endswith(".py"):
             extension = file[:-3]
             try:

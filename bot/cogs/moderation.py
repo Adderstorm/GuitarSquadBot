@@ -239,11 +239,11 @@ class Moderation(commands.Cog, name="moderation"):
             color=0x9C84EF
         )
         description = ""
-        if len(warnings_list) == 0:
+        if len(warnings_list.id) == 0:
             description = "This user has no warnings."
         else:
             for warning in warnings_list:
-                description += f"• Warned by <@{warning[2]}>: **{warning[3]}** (<t:{warning[4]}>) - Warn ID #{warning[5]}\n"
+                description += f"• Warned by <@{warning.moderator_id}>: **{warning.user_id}** (<t:{warning.reason}>)\n"
         embed.description = description
         await context.send(embed=embed)
 
