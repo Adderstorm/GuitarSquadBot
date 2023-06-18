@@ -193,7 +193,7 @@ async def load_cogs() -> None:
     """
     The code in this function is executed whenever the bot will start.
     """
-    for file in os.listdir("./bot/cogs"):
+    for file in os.listdir(f"{os.path.realpath(os.path.dirname(__file__))}\\cogs"):
         if file.endswith(".py"):
             extension = file[:-3]
             try:
