@@ -1,5 +1,6 @@
 import asyncio
 import os
+import aiosqlite
 from dotenv import load_dotenv
 import platform
 import random
@@ -61,6 +62,15 @@ The config is available using the following code:
 - self.bot.config # In cogs
 """
 bot.config = init_conf()
+async def init_db():
+    async with aiosqlite.connect(
+        f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db"
+    ) as db:
+        with open(
+            f"{os.path.realpath(os.path.dirname(__file__))}/database/schema.sql"
+        ) as file:
+            await db.executescript(file.read())
+        await db.commit()
 
 
 @bot.event
@@ -193,5 +203,6 @@ async def load_cogs() -> None:
                 exception = f"{type(e).__name__}: {e}"
                 print(f"Failed to load extension {extension}\n{exception}")
 
+asyncio.run(init_db())
 asyncio.run(load_cogs())
 bot.run(TOKEN)

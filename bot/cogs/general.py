@@ -44,7 +44,7 @@ class General(commands.Cog, name="general"):
         :param context: The hybrid command context.
         """
         embed = discord.Embed(
-            description="A usefull bot, was created by Mevik#0459, with help template of Krypton#7331",
+            description="A usefull bot, was created by Mevik",
             color=0x9C84EF
         )
         embed.set_author(
@@ -52,17 +52,17 @@ class General(commands.Cog, name="general"):
         )
         embed.add_field(
             name="Owner:",
-            value="Krypton#7331",
+            value="Mevik",
             inline=True
         )
         embed.add_field(
-            name="Python Version:",
-            value=f"{platform.python_version()}",
+            name="C# Version:",
+            value=f"7.0",
             inline=True
         )
         embed.add_field(
             name="Prefix:",
-            value=f"/ (Slash Commands) or {self.bot.PREFIX} for normal commands",
+            value=f"/ (Slash Commands)",
             inline=False
         )
         embed.set_footer(
